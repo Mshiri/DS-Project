@@ -1,5 +1,5 @@
 package DSProject;
-import java.util.ArrayList;
+import java.util.HashMap;
 public class Main {
     public static void main(String[] args) {
 
@@ -8,15 +8,15 @@ public class Main {
 class Node
 {
     String key;
-    ArrayList<Node> connected = new ArrayList<>();
-    ArrayList<Edge> edges = new ArrayList<>();
+    HashMap<String, Node> connected = new HashMap<>();
+    HashMap<String, Edge> edges = new HashMap<>();
     public Node(String key) {
         this.key = key;
     }
     void connect(Node to, Edge edge)
     {
-        connected.add(to);
-        edges.add(edge);
+        connected.put(to.key , to);
+        edges.put(edge.key , edge);
     }
 }
 class Edge
@@ -142,15 +142,15 @@ class Relation extends Edge
 }
 class CityGraph
 {
-    ArrayList<Node> nodes = new ArrayList<>();
-    ArrayList<Edge> edges = new ArrayList<>();
-    ArrayList<Person> persons = new ArrayList<>();
-    ArrayList<BankAccount>  bankAccounts= new ArrayList<>();
-    ArrayList<Call> calls = new ArrayList<>();
-    ArrayList<Car> cars = new ArrayList<>();
-    ArrayList<Home> homes = new ArrayList<>();
-    ArrayList<Own> owns = new ArrayList<>();
-    ArrayList<Mobile> mobiles = new ArrayList<>();
-    ArrayList<Relation> relations = new ArrayList<>();
-    ArrayList<Transaction> transactions = new ArrayList<>();
+   HashMap<String , Node> nodes = new HashMap<>();
+   HashMap<String , Edge> edges = new HashMap<>();
+   HashMap<String , Person> persons = new HashMap<>();
+   HashMap<String , BankAccount>  bankAccounts= new HashMap<>();
+   HashMap<String , Call> calls = new HashMap<>();
+   HashMap<String , Car> cars = new HashMap<>();
+   HashMap<String , Home> homes = new HashMap<>();
+   HashMap<String , Own> owns =new HashMap<>();
+   HashMap<String , Mobile> mobiles = new HashMap<>();
+   HashMap<String , Relation> relations =new HashMap<>();
+   HashMap<String , Transaction> transactions =new HashMap<>();
 }
