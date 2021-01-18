@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class Main {
     static Scanner sc = null;
-    static JFileChooser chooser = new JFileChooser();
+    static JFileChooser chooser = new JFileChooser("d:");
+    static CityGraph graph = new CityGraph();
     public static void main(String[] args) {
         selectFolder();
         showMainMenu();
@@ -84,6 +85,20 @@ public class Main {
         String[] raw = values.get(0);
         for (int i=1;i<values.size();i++)
             strings[i-1] = values.get(i);
+        for (String[] i : strings)
+        {
+            for (String j : i)
+            {
+                switch (file.getName())
+                {
+                    case "people.csv": graph.add_person(new Person(i[0] , i[1] , i[2] , i[3] , i[4] , i[5]));break;
+                    case "accounts.csv": graph.add_bankAccount(new BankAccount(Long.parseLong(i[0]) , i[1] , i[2] , i[3]));
+                    case "phones.csv": graph.add_mobile(new Mobile(Long.parseLong(i[0])  , i[1] , i[2]));
+                    case "cars.csv": graph.add_car(new Car(i[0] , i[1] , i[2] , i[3]));
+                    case "homes.csv": graph.add_home(new Home(Long.parseLong(i[0]) , i[1] , i[2] , Integer.parseInt(i[3]) , i[4]));
+                }
+            }
+        }
         JFrame jFrame = new JFrame();
         JTable table = new JTable(strings, raw);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -91,6 +106,7 @@ public class Main {
         jFrame.setLocationRelativeTo(null);
         jFrame.setExtendedState( jFrame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
         jFrame.setVisible(true);
+        System.out.println(table.getRowCount() + " " + file.getName().substring(0 , file.getName().length()-4));
         jFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
