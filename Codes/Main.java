@@ -1,18 +1,20 @@
 package DSProject;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 public class Main {
     static Scanner sc = null;
+    static int index =0;
     static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy");
     static LocalDateTime date = LocalDateTime.now();
+    static HashSet<Person> fazian;
+    static HashSet<Person> ghach;
     static int cur = Integer.parseInt(dtf.format(date));
     static JFileChooser chooser = new JFileChooser("D:\\Alireza\\Tuturials\\Uni\\Data Structure\\Project\\SampleData (2)");
     static CityGraph graph = new CityGraph();
@@ -71,7 +73,13 @@ public class Main {
         phones.addActionListener(actionEvent -> showPhones());
         relationships.addActionListener(actionEvent -> showRelations());
         transactions.addActionListener(actionEvent -> showTrans());
-        faz2.addActionListener(actionEvent -> faz2());
+        faz2.addActionListener(actionEvent -> {
+            try {
+                faz2();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         faz3.addActionListener(actionEvent -> faz3());
         faz4.addActionListener(actionEvent -> faz4());
     }
@@ -166,27 +174,40 @@ public class Main {
         File file = new File(chooser.getSelectedFile().getAbsolutePath()+"\\homes.csv");
         scanner(file, 5);
     }
-    static void faz2()
-    {
+    static void faz2() throws IOException {
         HashMap<String,Person> persons= graph.persons;
-        HashMap<String,Person> fazian = graph.persons;
+        fazian = new HashSet<>();
         for(Person p:persons.values())
         {
             if(p.job.equals("گمرک") || p.job.equals("سازمان بنادر"))
             {
                 if (checkfaz2(p))
-                    fazian.put(p.key , p);
+                    fazian.add(p);
                 for (Node node : p.connected.values())
                     if (node instanceof Person)
-                        if (checkfaz2(p))
-                            fazian.put(p.key , p);
+                        if (checkfaz2((Person) node))
+                            fazian.add((Person) node);
             }
         }
-        
+        File file = new File("d:\\maznonin 2.txt");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        for (Person person : fazian)
+        {
+            String text = (++index) + "  ->  " + person.toString() + "\n";
+            fileOutputStream.write(text.getBytes());
+        }
     }
     static void faz3()
     {
-
+        HashMap<String,Person> persons= graph.persons;
+        ghach = new HashSet<>();
+        for(Person p:persons.values()) {
+            if (p.job.equals("قاچاقچی"))
+            {
+                ghach.add(p);
+                System.out.println(p);
+            }
+        }
     }
     static void faz4()
     {
@@ -194,13 +215,12 @@ public class Main {
     }
     static boolean checkfaz2(Person person)
     {
-        for (Edge edge : person.edges.values())
+        for (Own own : person.owns.values())
         {
-            if (edge instanceof Own)
+            int year = Integer.parseInt(own.time.substring(0 , 4));
+            if (cur-year <= 3)
             {
-                int year = Integer.parseInt(((Own) edge).time.substring(0 , 4));
-                if (cur-year <=2)
-                    return true;
+                return true;
             }
         }
         return false;
