@@ -4,11 +4,17 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 public class Main {
     static Scanner sc = null;
-    static JFileChooser chooser = new JFileChooser("d:");
+    static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy");
+    static LocalDateTime date = LocalDateTime.now();
+    static int cur = Integer.parseInt(dtf.format(date));
+    static JFileChooser chooser = new JFileChooser("D:\\Alireza\\Tuturials\\Uni\\Data Structure\\Project\\SampleData (2)");
     static CityGraph graph = new CityGraph();
     public static void main(String[] args) {
         selectFolder();
@@ -35,17 +41,23 @@ public class Main {
         JButton phones = new JButton("Phones");
         JButton relationships = new JButton("Relationships");
         JButton transactions = new JButton("Transactions");
-        JPanel panel = new JPanel(new GridLayout(3 , 3));
-        panel.add(people);
-        panel.add(accounts);
-        panel.add(calls);
-        panel.add(cars);
-        panel.add(homes);
-        panel.add(ownerships);
-        panel.add(phones);
-        panel.add(relationships);
-        panel.add(transactions);
-        frameMain.add(panel);
+        JButton faz2 = new JButton("Faz 2");
+        JButton faz3 = new JButton("Faz 3");
+        JButton faz4 = new JButton("Faz 4");
+        JPanel panel1 = new JPanel(new GridLayout(4 , 3));
+        panel1.add(people);
+        panel1.add(accounts);
+        panel1.add(calls);
+        panel1.add(cars);
+        panel1.add(homes);
+        panel1.add(ownerships);
+        panel1.add(phones);
+        panel1.add(relationships);
+        panel1.add(transactions);
+        panel1.add(faz2);
+        panel1.add(faz3);
+        panel1.add(faz4);
+        frameMain.add(panel1);
         frameMain.setLocationRelativeTo(null);
         frameMain.setSize(400 , 200);
         frameMain.setVisible(true);
@@ -59,6 +71,9 @@ public class Main {
         phones.addActionListener(actionEvent -> showPhones());
         relationships.addActionListener(actionEvent -> showRelations());
         transactions.addActionListener(actionEvent -> showTrans());
+        faz2.addActionListener(actionEvent -> faz2());
+        faz3.addActionListener(actionEvent -> faz3());
+        faz4.addActionListener(actionEvent -> faz4());
     }
     static void showPeople()
     {
@@ -87,17 +102,18 @@ public class Main {
             strings[i-1] = values.get(i);
         for (String[] i : strings)
         {
-            for (String j : i)
-            {
                 switch (file.getName())
                 {
                     case "people.csv": graph.add_person(new Person(i[0] , i[1] , i[2] , i[3] , i[4] , i[5]));break;
-                    case "accounts.csv": graph.add_bankAccount(new BankAccount(Long.parseLong(i[0]) , i[1] , i[2] , i[3]));
-                    case "phones.csv": graph.add_mobile(new Mobile(Long.parseLong(i[0])  , i[1] , i[2]));
-                    case "cars.csv": graph.add_car(new Car(i[0] , i[1] , i[2] , i[3]));
-                    case "homes.csv": graph.add_home(new Home(Long.parseLong(i[0]) , i[1] , i[2] , Integer.parseInt(i[3]) , i[4]));
+                    case "accounts.csv": graph.add_bankAccount(new BankAccount(Long.parseLong(i[0]) , i[1] , i[2] , i[3]));break;
+                    case "phones.csv": graph.add_mobile(new Mobile(Long.parseLong(i[0])  , i[1] , i[2]));break;
+                    case "cars.csv": graph.add_car(new Car(i[0] , i[1] , i[2] , i[3]));break;
+                    case "homes.csv": graph.add_home(new Home(Long.parseLong(i[0]) , i[1] , i[2] , Integer.parseInt(i[3]) , i[4]));break;
+                    case "ownerships.csv": graph.add_own(i);break;
+                    case "transactions.csv": graph.add_transaction(i);break;
+                    case "calls.csv": graph.add_call(i);break;
+                    case "relationships.csv": graph.add_relation(i);break;
                 }
-            }
         }
         JFrame jFrame = new JFrame();
         JTable table = new JTable(strings, raw);
@@ -149,5 +165,44 @@ public class Main {
     {
         File file = new File(chooser.getSelectedFile().getAbsolutePath()+"\\homes.csv");
         scanner(file, 5);
+    }
+    static void faz2()
+    {
+        HashMap<String,Person> persons= graph.persons;
+        HashMap<String,Person> fazian = graph.persons;
+        for(Person p:persons.values())
+        {
+            if(p.job.equals("گمرک") || p.job.equals("سازمان بنادر"))
+            {
+                if (checkfaz2(p))
+                    fazian.put(p.key , p);
+                for (Node node : p.connected.values())
+                    if (node instanceof Person)
+                        if (checkfaz2(p))
+                            fazian.put(p.key , p);
+            }
+        }
+        
+    }
+    static void faz3()
+    {
+
+    }
+    static void faz4()
+    {
+
+    }
+    static boolean checkfaz2(Person person)
+    {
+        for (Edge edge : person.edges.values())
+        {
+            if (edge instanceof Own)
+            {
+                int year = Integer.parseInt(((Own) edge).time.substring(0 , 4));
+                if (cur-year <=2)
+                    return true;
+            }
+        }
+        return false;
     }
 }

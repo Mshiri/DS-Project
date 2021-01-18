@@ -42,19 +42,12 @@ public class CityGraph
    void add_edge(Edge e){
       edges.put(e.key, e);
    }
-   void add_call(Call c){
-      calls.put(c.key, c);
-      this.add_edge(c);
-   }
    void add_call(String[] c){
       Mobile from = get_mobile(c[0]);
       Mobile to = get_mobile(c[1]);
-      Call call = new Call(from , to , c[2] , c[4] , Integer.parseInt(c[5]));
+      Call call = new Call(from , to , c[2] , c[3] , c[4]);
       from.connect(to , call);
-   }
-   void add_own(Own o){
-      owns.put(o.key, o);
-      this.add_edge(o);
+      edges.put(call.key , call);
    }
    void add_own(String[] o){
       Person person = get_person(o[0]);
@@ -71,28 +64,24 @@ public class CityGraph
          own = new Own(person,car , o[2] , o[3] , o[4]);
          person.connect(car , own);
       }
-   }
-   void add_relation(Relation r){
-      relations.put(r.key, r);
-      this.add_edge(r);
+      edges.put(own.key , own);
    }
    void add_relation(String[] r){
       Person from = get_person(r[0]);
       Person to = get_person(r[1]);
-      Relation call1 = new Relation(from , to , r[2] , r[4]);
-      Relation call2 = new Relation(from , to , r[2] , r[4]);
-      from.connect(to , call1);
-      to.connect(from , call2);
-   }
-   void add_transaction(Transaction t){
-      transactions.put(t.key, t);
-      this.add_edge(t);
+      Relation rel1 = new Relation(from , to , r[2] , r[3]);
+      Relation rel2 = new Relation(from , to , r[2] , r[3]);
+      from.connect(to , rel1);
+      to.connect(from , rel2);
+      edges.put(rel1.key , rel1);
+      edges.put(rel2.key , rel2);
    }
    void add_transaction(String[] t){
       BankAccount from = get_bankAccount(t[0]);
       BankAccount to = get_bankAccount(t[1]);
       Transaction transaction = new Transaction(from , to , t[2] , t[3] , t[4]);
       from.connect(to , transaction);
+      edges.put(transaction.key , transaction);
    }
 
    //---------------get nodes------------------
