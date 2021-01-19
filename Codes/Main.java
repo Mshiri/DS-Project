@@ -140,7 +140,13 @@ public class Main {
                 e.printStackTrace();
             }
         });
-        faz4.addActionListener(actionEvent -> faz4());
+        faz4.addActionListener(actionEvent -> {
+            try {
+                faz4();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         showPeople();
         showAccounts();
         showHomes();
@@ -199,7 +205,7 @@ public class Main {
         jFrame.setVisible(true);
         System.out.println(table.getRowCount() + " " + file.getName().substring(0 , file.getName().length()-4));
         jFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-//        Thread.sleep(300);
+        Thread.sleep(300);
         jFrame.dispatchEvent(new WindowEvent(jFrame , WindowEvent.WINDOW_CLOSING));
     }
 
@@ -261,25 +267,74 @@ public class Main {
 
     static void faz3() throws IOException {
         HashMap<String,Person> persons= graph.persons;
-        for(Person p:persons.values()) {
+        HashSet<Person> maz = new HashSet<>();
+        for(Person p:persons.values())
             if (p.job.equals("قاچاقچی"))
-            {
-                Person maz = checkfaz3(p);
-                if (maz !=null)
-                {
-                    System.out.println(maz);
-                    File file = new File("d:\\maznonin 3.txt");
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    String text = (++index) + "  ->  " + maz.toString() + "\n";
-                    fileOutputStream.write(text.getBytes());
-                }
-                else fazian.remove(p);
-            }
+                checkfaz3(p , maz);
+        File file = new File("d:\\maznonin 3.txt");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fazian = new HashSet<>();
+        for (Person p : maz)
+        {
+            String text = (++index) + "  ->  " + p.toString() + "\n";
+            fileOutputStream.write(text.getBytes());
+            fazian.add(p);
         }
     }
-    static void faz4()
-    {
 
+    static void faz4() throws IOException {
+        HashMap<String,Person> persons= graph.persons;
+        HashSet<Person> maz = new HashSet<>();
+        for(Person p:persons.values())
+            if (p.job.equals("قاچاقچی"))
+            {
+                Person fazi = checkfaz4a(p);
+                if (fazi != null)
+                    maz.add(fazi);
+            }
+        for (Person fazi : fazian)
+        {
+            if (checkfaz4b(fazi))
+                maz.add(fazi);
+        }
+        File file = new File("d:\\maznonin 4.txt");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        fazian = new HashSet<>();
+        for (Person p : maz)
+        {
+            String text = (++index) + "  ->  " + p.toString() + "\n";
+            fileOutputStream.write(text.getBytes());
+            fazian.add(p);
+        }
+    }
+    static Person checkfaz4a(Person p)
+    {
+        for (Edge edge : p.edges.values())
+        {
+            if (edge instanceof Call)
+            {
+                if (fazian.contains(graph.get_person(((Person)(edge.to)).kode)))
+                {
+                    return (Person)(((Call)edge).to);
+                }
+            }
+        }
+        return null;
+    }
+    static boolean checkfaz4b(Person fazi)
+    {
+        for (Edge edge : fazi.edges.values())
+        {
+            if (edge instanceof Call)
+            {
+
+                if (graph.get_person(((Person)(edge.to)).kode).job.equals("قاچاقچی"))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     static boolean checkfaz2(Person person)
     {
@@ -294,25 +349,23 @@ public class Main {
         return false;
     }
     static int i=0;
-    static Person checkfaz3(Person person)
+    static void checkfaz3(Person person , HashSet<Person> maz)
     {
         for (Edge e : person.edges.values())
         {
             if (e instanceof Transaction && i<=5)
             {
                 i++;
-                if (fazian.contains(((Transaction)e).to))
+                if (fazian.contains(graph.get_person(((Person)(e.to)).kode)))
                 {
                     i=0;
-                    return (Person) ((Transaction) e ).to;
+                    maz.add(person);
                 }
-                if (i==5)
-                {
-                    i=0;
-                }
-                return checkfaz3((Person) ((Transaction) e ).to);
+                checkfaz3((Person) ((Transaction) e ).to , maz);
+            }
+            else if (i==5) {
+                i = 0;
             }
         }
-        return null;
     }
 }
